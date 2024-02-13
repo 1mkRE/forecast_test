@@ -62,7 +62,7 @@ def app_start():
     n_input = 20
     n_features = 1
 
-    clima_model = load_model('LSTM_Models/lstm_univariate_btg.h5')
+    clima_model = load_model('LSTM_Models/lstm_forecast_model.h5')
 
     with st.sidebar:
         st.header('Parameters', divider='rainbow')
