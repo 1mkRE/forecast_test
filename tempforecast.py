@@ -57,7 +57,6 @@ X_test, y_test = X[65000:], y[65000:]
 n_features = 1
 
 model1 = Sequential()
-
 model1.add(InputLayer((n_input, n_features)))
 model1.add(LSTM(100, return_sequences=True))
 model1.add(LSTM(100, return_sequences=True))
