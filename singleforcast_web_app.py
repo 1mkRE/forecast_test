@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import streamlit as st
+# Open via cmd from the project folder the following command to start the app: streamlit run singleforcast_web_app.py
 from keras.models import load_model
 
 
