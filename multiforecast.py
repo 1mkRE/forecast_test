@@ -1,5 +1,5 @@
 """
-Zatim nefunguje není celkěm dořešeno.
+Zatim nefunguje není celkěm dokoneno!
 """
 
 import numpy as np
