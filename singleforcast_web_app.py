@@ -66,8 +66,8 @@ def app_start():
 
     with st.sidebar:
         st.header('Parameters', divider='rainbow')
-        forecast_timeperiod = st.slider('Forecast days', 1, 48, 24)
-        past_timeperiod = st.slider('Past days', 20, 8760, 240)
+        forecast_timeperiod = st.slider('Forecast hours', 1, 48, 24)
+        past_timeperiod = st.slider('Past hours', 20, 8760, 240)
         period = st.slider('Period', 10000, 70000, 10000)
 
     # forecast_timeperiod = 24  # next 1 day
