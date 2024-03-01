@@ -2,22 +2,17 @@
 Zatim nefunguje není celkěm dořešeno.
 """
 
-
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from keras.models import Sequential, save_model, load_model
-from keras.layers import *
-from keras.callbacks import EarlyStopping
-from keras.losses import MeanSquaredError
-from keras.metrics import RootMeanSquaredError
-from keras.optimizers import Adam
+from keras.models import load_model
 
 
 def futureForecast(df, col, col2, n_input, n_features, forecast_timeperiod, model):
-    # array = df[col, col2]
     x_input = np.array(df[len(df) - n_input:][[col, col2]])
+    x_col2_start_index = len(df) - n_input
+    x_col2 = np.array(df[:][[col2]])
     temp_input = list(x_input)
     lst_output = []
     i = 0
@@ -25,30 +20,28 @@ def futureForecast(df, col, col2, n_input, n_features, forecast_timeperiod, mode
     while i < forecast_timeperiod:
         if len(temp_input) > n_input:
             x_input = np.array(temp_input[1:])
-            x_input = x_input.reshape(1, n_input, n_features)
+            x_input = x_input.reshape((1, n_input, n_features))
             yhat = model.predict(x_input, verbose=0)
-            temp_input.append(yhat[0][0])
+            yhat = np.append(yhat, x_col2[x_col2_start_index])
+            yhat = yhat.reshape(1, 2)
+            temp_input.append(yhat[0][:])
             temp_input = temp_input[1:]
-            lst_output.append(yhat[0][0])
-
+            lst_output.append(yhat[0][:])
+            x_col2_start_index += 1
             i = i + 1
-
         else:
-            print(x_input)
-            x_input = x_input.reshape(1, n_input, n_features)
-            print(x_input.shape)
+            x_input = x_input.reshape((1, n_input, n_features))
             yhat = model.predict(x_input, verbose=0)
-            temp_input.append(yhat[0][0])
-            print(temp_input)
-            lst_output.append(yhat[0][0])
-
+            yhat = np.append(yhat,x_col2[x_col2_start_index])
+            yhat = yhat.reshape(1,2)
+            temp_input.append(yhat[0][:])
+            lst_output.append(yhat[0][:])
+            x_col2_start_index += 1
             i = i + 1
-
     return lst_output
 
 
-def input_LSTM(df, input_sequence):
-
+def sequential_input_LSTM(df, input_sequence):
     df_np = df.to_numpy()
     X = []
     y = []
@@ -77,7 +70,7 @@ def app_start():
 
     df_min_model_data = df_clim_hour[['temperature', 'pressure']]
 
-    X, y = input_LSTM(df_min_model_data, n_input)
+    X, y = sequential_input_LSTM(df_min_model_data, n_input)
 
     # Training data
     X_train, y_train = X[:60000], y[:60000]
@@ -88,11 +81,9 @@ def app_start():
     # Test data
     X_test, y_test = X[65000:], y[65000:]
 
-    print(X_test.shape)
-
     # load the model
 
-    model1 = load_model('LSTM_Models/lstm_multi_forecast_model.h5')
+    model1 = load_model('LSTM_Models/lstm_univariate_multi.h5')
 
     # Predict the temperature against the test data
 
@@ -109,29 +100,20 @@ def app_start():
     # LSTM temperature forecast on complete Test Data
 
     test_predictions_df1.plot(figsize=(15, 6))
-    #plt.show()
-
-    # LSTM temperature forecast on last 1 Month in the Test Data (720 hours)
-
-    #test_predictions_df1[(len(X_test) - 720):].plot(figsize=(15, 5))
-
-    #train_results = pd.DataFrame(data={'Train Predictions': list(test_predictions1), 'Actuals': list(y_test)})
-    #print(train_results[50:100])
-    #plt.plot(train_results['Train Predictions'][len(train_results)-240:])
-    #plt.plot(train_results['Actuals'][len(train_results)-240:])
-
 
     n_input = 10
     n_features = 2
-    forecast_timeperiod = 48        # next 1 days
+    forecast_timeperiod = 10        # next 10 hours
     model = model1
 
     predict_df = df_clim[5000:15000]
     forecast_output = futureForecast(predict_df, 'temperature', 'pressure', n_input, n_features, forecast_timeperiod, model)
 
     last_10_days = df_clim_hour['temperature'][len(predict_df) - forecast_timeperiod:].tolist()
-
-    next_10_days = pd.DataFrame(forecast_output, columns=['FutureForecast'])
+    data = []
+    for a in forecast_output:
+        data.append(a[0])
+    next_10_days = pd.DataFrame(data, columns=['FutureForecast'])
 
     plt.figure(figsize=(15, 5))
 
@@ -145,9 +127,6 @@ def app_start():
     plt.xlabel('Hours')
     plt.ylabel('Temperature')
     plt.show()
-    # save the figure
-    # plt.savefig('Pics_Models/lstm_univariate_forecast_pic.png')
-    # plt.savefig('Pics_Models/lstm_univariate_forecast_pdf.pdf')
 
 
 if __name__ == '__main__':

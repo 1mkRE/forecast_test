@@ -30,20 +30,18 @@ def futureForecast(df, col, n_input, n_features, forecast_timeperiod, model):
     while i < forecast_timeperiod:
         if len(temp_input) > n_input:
             x_input = np.array(temp_input[1:])
-            x_input = x_input.reshape((n_input, n_features))
+            x_input = x_input.reshape((n_features, n_input))
             yhat = model.predict(x_input, verbose=0)
             temp_input.append(yhat[0][0])
             temp_input = temp_input[1:]
             lst_output.append(yhat[0][0])
-
             i = i + 1
 
         else:
-            x_input = x_input.reshape((n_input, n_features))
+            x_input = x_input.reshape((n_features, n_input))
             yhat = model.predict(x_input, verbose=0)
             temp_input.append(yhat[0][0])
             lst_output.append(yhat[0][0])
-
             i = i + 1
 
     return lst_output
@@ -62,7 +60,8 @@ def app_start():
     n_input = 20
     n_features = 1
 
-    clima_model = load_model('LSTM_Models/lstm_forecast_model.h5')
+    # clima_model = load_model('LSTM_Models/lstm_forecast_model.h5')
+    clima_model = load_model('LSTM_Models/lstm_univariate_btg.h5')
 
     with st.sidebar:
         st.header('Parameters', divider='rainbow')
