@@ -19,7 +19,7 @@ def init_page():
                 stDecoration {display:none;}
             </style>
         """, unsafe_allow_html=True)
-    st.header('Weather Forecast', divider='rainbow')
+    st.header('Poslední teploty', divider='rainbow')
 
 
 def futureForecast(df, col, n_input, n_features, forecast_timeperiod, model):
@@ -65,10 +65,10 @@ def app_start():
     clima_model = load_model('LSTM_Models/lstm_univariate_btg.h5')
 
     with st.sidebar:
-        st.header('Parameters', divider='rainbow')
-        forecast_timeperiod = st.slider('Forecast hours', 1, 48, 24)
-        past_timeperiod = st.slider('Past hours', 20, 8760, 240)
-        period = st.slider('Period', 10000, 70000, 10000)
+        st.header('Nastavení', divider='rainbow')
+        forecast_timeperiod = st.slider('Předpověd v hodinach', 1, 48, 24)
+        past_timeperiod = st.slider('Předchozí hodiny', 20, 8760, 240)
+        period = st.slider('Roční období', 10000, 70000, 10000)
 
     # forecast_timeperiod = 24  # next 1 day
     # past_timeperiod = 240  # last 10 days
@@ -81,6 +81,7 @@ def app_start():
 
     #if st.button("Show forecast"):
     st.line_chart(last_days, color="#FF0000")
+    st.header('Předpověd teplot', divider='rainbow')
     st.line_chart(next_days, color="#009900")
 
 

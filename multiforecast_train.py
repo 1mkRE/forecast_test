@@ -89,4 +89,4 @@ plt.show()
 # Safe model
 
 # save the model
-save_model(model1, "LSTM_Models/lstm_multi_forecast_model.h5")
+save_model(model1, "LSTM_Models/lstm_multi_forecast_model_btg.h5")
